@@ -62,11 +62,17 @@ def compute_matrix_km(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def to_long(distance_df: pd.DataFrame) -> pd.DataFrame:
-    return (
-        distance_df.stack()
-        .reset_index()
-        .rename(columns={"level_0": "FROM_STORE_CODE", "level_1": "TO_STORE_CODE", 0: "DIST_KM"})
+    # ทำให้ชื่อ index/columns ไม่ชนกับคอลัมน์ที่จะสร้าง
+    s = distance_df.copy()
+    s.index.name = "FROM_STORE_CODE"
+    s.columns.name = "TO_STORE_CODE"
+
+    long_df = (
+        s.stack(dropna=False)
+         .rename("DIST_KM")
+         .reset_index()
     )
+    return long_df
 
 
 # -----------------------------
